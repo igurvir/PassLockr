@@ -7,16 +7,18 @@ function App() {
   const [includeUpper, setIncludeUpper] = useState(true);
   const [includeNumbers, setIncludeNumbers] = useState(true);
   const [includeSymbols, setIncludeSymbols] = useState(true);
-  const [website, setWebsite] = useState('');  // State for website input
+  const [website, setWebsite] = useState('');  
   const [strength, setStrength] = useState('Weak');
-  const [savedPasswords, setSavedPasswords] = useState([]);  // State to store retrieved passwords
+  const [savedPasswords, setSavedPasswords] = useState([]);
+  const [masterPassword, setMasterPassword] = useState(''); // State for master password
+  const [isVerified, setIsVerified] = useState(false); // To track if master password is verified
 
   const calculateStrength = (pwd) => {
     let strengthLevel = 0;
     if (pwd.length >= 8) strengthLevel++;
-    if (/[A-Z]/.test(pwd)) strengthLevel++;  // Uppercase check
-    if (/[0-9]/.test(pwd)) strengthLevel++;  // Numbers check
-    if (/[!@#$%^&*()_+[\]{}|;:,.<>?]/.test(pwd)) strengthLevel++;  // Symbols check
+    if (/[A-Z]/.test(pwd)) strengthLevel++; 
+    if (/[0-9]/.test(pwd)) strengthLevel++; 
+    if (/[!@#$%^&*()_+[\]{}|;:,.<>?]/.test(pwd)) strengthLevel++; 
 
     switch (strengthLevel) {
       case 1:
@@ -42,7 +44,6 @@ function App() {
       const char2 = pwd[i - 1];
       const char3 = pwd[i];
 
-      // If three consecutive characters are from the same set, return false
       if (
         (isUppercase(char1) && isUppercase(char2) && isUppercase(char3)) ||
         (isNumber(char1) && isNumber(char2) && isNumber(char3)) ||
@@ -67,37 +68,40 @@ function App() {
       const data = await response.json();
       validPassword = data.password;
 
-      // Validate password pattern
       isValid = checkPasswordPattern(validPassword);
     }
 
-    console.log('Password:', validPassword, 'Strength:', calculateStrength(validPassword));
     setPassword(validPassword);
     setStrength(calculateStrength(validPassword));
   };
 
-  // Save password functionality to store password with website name
   const savePassword = async () => {
     const response = await fetch('/api/save-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password, website }),  // Send password and website
+      body: JSON.stringify({ password, website }),
     });
     const result = await response.json();
-    alert(result.message);  // Show success message
+    alert(result.message);
   };
 
-  // Fetch saved passwords from the backend
+  // Fetch passwords after verifying the master password
   const fetchSavedPasswords = async () => {
-    const response = await fetch('/api/get-passwords');
-    const data = await response.json();
-    setSavedPasswords(data);  // Store the retrieved passwords
-  };
+    const response = await fetch('/api/get-passwords', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ masterPassword }), // Send the master password for verification
+    });
 
-  // Fetch saved passwords on component mount
-  useEffect(() => {
-    fetchSavedPasswords();
-  }, []);
+    const data = await response.json();
+
+    if (response.status === 200) {
+      setSavedPasswords(data);
+      setIsVerified(true); // Mark master password as verified
+    } else {
+      alert('Invalid master password');
+    }
+  };
 
   return (
     <div className="App">
@@ -142,7 +146,6 @@ function App() {
           </label>
         </div>
 
-        {/* Website Input */}
         <div>
           <label>Website/Service Name:</label>
           <input
@@ -154,26 +157,43 @@ function App() {
         </div>
 
         <button onClick={generatePassword}>Generate Password</button>
-        <button onClick={savePassword}>Save Password</button>  {/* Save Button */}
+        <button onClick={savePassword}>Save Password</button>
+
         <div>
           <h2>Generated Password: {password}</h2>
           <h3>Password Strength: {strength}</h3>
         </div>
 
-        {/* Display saved passwords */}
-        <h2>Saved Passwords:</h2>
-        <ul>
-          {Array.isArray(savedPasswords) && savedPasswords.length > 0 ? (
-            savedPasswords.map((pwd, index) => (
-              <li key={index}>
-                <strong>Website:</strong> {pwd.website} <br />
-                <strong>Password:</strong> {pwd.password}
-              </li>
-            ))
-          ) : (
-            <li>No saved passwords found.</li>
-          )}
-        </ul>
+        {/* Prompt for master password */}
+        <div>
+          <h2>Enter Master Password to View Saved Passwords</h2>
+          <input
+            type="password"
+            value={masterPassword}
+            onChange={(e) => setMasterPassword(e.target.value)}
+            placeholder="Enter master password"
+          />
+          <button onClick={fetchSavedPasswords}>Verify Master Password</button>
+        </div>
+
+        {/* Display saved passwords if verified */}
+        {isVerified && (
+          <div>
+            <h2>Saved Passwords:</h2>
+            <ul>
+              {Array.isArray(savedPasswords) && savedPasswords.length > 0 ? (
+                savedPasswords.map((pwd, index) => (
+                  <li key={index}>
+                    <strong>Website:</strong> {pwd.website} <br />
+                    <strong>Password:</strong> {pwd.password}
+                  </li>
+                ))
+              ) : (
+                <li>No saved passwords found.</li>
+              )}
+            </ul>
+          </div>
+        )}
       </header>
     </div>
   );
