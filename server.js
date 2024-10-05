@@ -82,6 +82,31 @@ app.post('/api/verify-master-password', async (req, res) => {
   }
 });
 
+// API route for changing the master password
+app.post('/api/change-master-password', async (req, res) => {
+  const { currentMasterPassword, newMasterPassword } = req.body;
+  
+  if (!currentMasterPassword || !newMasterPassword) {
+    return res.status(400).json({ message: 'Both current and new master passwords are required' });
+  }
+
+  try {
+    // Verify the current master password
+    const match = await bcrypt.compare(currentMasterPassword, masterPasswordHash);
+    if (!match) {
+      return res.status(401).json({ message: 'Incorrect current master password' });
+    }
+
+    // Hash the new master password
+    const saltRounds = 10;
+    masterPasswordHash = await bcrypt.hash(newMasterPassword, saltRounds);
+    res.json({ message: 'Master password changed successfully' });
+  } catch (err) {
+    console.error('Error changing master password:', err.message);
+    res.status(500).json({ message: 'Error changing master password' });
+  }
+});
+
 // API route for generating passwords
 app.post('/api/generate-password', (req, res) => {
   const length = parseInt(req.body.length, 10);

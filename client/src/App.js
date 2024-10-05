@@ -13,6 +13,11 @@ function App() {
   const [masterPassword, setMasterPassword] = useState(''); // State for master password
   const [isVerified, setIsVerified] = useState(false); // To track if master password is verified
 
+  // New states for changing master password
+  const [currentMasterPassword, setCurrentMasterPassword] = useState('');
+  const [newMasterPassword, setNewMasterPassword] = useState('');
+  const [confirmMasterPassword, setConfirmMasterPassword] = useState('');
+
   const calculateStrength = (pwd) => {
     let strengthLevel = 0;
     if (pwd.length >= 8) strengthLevel++;
@@ -100,6 +105,31 @@ function App() {
       setIsVerified(true); // Mark master password as verified
     } else {
       alert('Invalid master password');
+    }
+  };
+
+  // Change master password logic
+  const changeMasterPassword = async () => {
+    if (newMasterPassword !== confirmMasterPassword) {
+      return alert('New passwords do not match');
+    }
+
+    const response = await fetch('/api/change-master-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        currentMasterPassword,
+        newMasterPassword,
+      }),
+    });
+
+    if (response.ok) {
+      alert('Master password changed successfully');
+      setCurrentMasterPassword('');
+      setNewMasterPassword('');
+      setConfirmMasterPassword('');
+    } else {
+      alert('Failed to change master password');
     }
   };
 
@@ -194,6 +224,30 @@ function App() {
             </ul>
           </div>
         )}
+
+        {/* Change Master Password Section */}
+        <div>
+          <h2>Change Master Password</h2>
+          <input
+            type="password"
+            value={currentMasterPassword}
+            onChange={(e) => setCurrentMasterPassword(e.target.value)}
+            placeholder="Current Master Password"
+          />
+          <input
+            type="password"
+            value={newMasterPassword}
+            onChange={(e) => setNewMasterPassword(e.target.value)}
+            placeholder="New Master Password"
+          />
+          <input
+            type="password"
+            value={confirmMasterPassword}
+            onChange={(e) => setConfirmMasterPassword(e.target.value)}
+            placeholder="Confirm New Master Password"
+          />
+          <button onClick={changeMasterPassword}>Change Master Password</button>
+        </div>
       </header>
     </div>
   );
