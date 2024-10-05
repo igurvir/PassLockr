@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
 const mongoose = require('mongoose');
-const Password = require('./models/Password'); // Import the Password model
+const Password = require('./models/Password');
+require('dotenv').config();  // Load environment variables
 
 const app = express();
 
@@ -10,22 +11,38 @@ app.use(express.json());
 app.use(cors()); // Enable CORS for all routes
 
 // MongoDB connection
-const dbURI = 'mongodb://localhost:27017/passlockr'; // Update with your MongoDB URI
+const dbURI = 'mongodb://localhost:27017/passlockr'; 
 mongoose.connect(dbURI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log('MongoDB connection error:', err));
 
 // Encryption setup
 const algorithm = 'aes-256-cbc';
-const secretKey = crypto.randomBytes(32);  // Secret key for encryption
-const iv = crypto.randomBytes(16);         // Initialization vector
+const secretKey = Buffer.from(process.env.SECRET_KEY, 'utf8');
 
 // Function to encrypt passwords
 const encryptPassword = (password) => {
+  const iv = crypto.randomBytes(16); // Generate a unique IV for each password
   const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
   let encrypted = cipher.update(password, 'utf8', 'hex');
   encrypted += cipher.final('hex');
+  console.log(`Encrypted password: ${encrypted}, IV: ${iv.toString('hex')}`);
   return { iv: iv.toString('hex'), encryptedData: encrypted };
+};
+
+// Function to decrypt passwords
+const decryptPassword = (encryptedPassword, iv) => {
+  try {
+    console.log(`Decrypting with IV: ${iv}`);
+    const decipher = crypto.createDecipheriv(algorithm, secretKey, Buffer.from(iv, 'hex'));
+    let decrypted = decipher.update(encryptedPassword, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    console.log(`Decrypted password: ${decrypted}`);
+    return decrypted;
+  } catch (err) {
+    console.error('Decryption error:', err.message);
+    throw new Error('Decryption failed');
+  }
 };
 
 // API route for generating passwords
@@ -84,13 +101,17 @@ app.post('/api/save-password', async (req, res) => {
   }
 });
 
-// API route for retrieving saved passwords from MongoDB
+// API route for retrieving saved passwords from MongoDB and decrypting
 app.get('/api/get-passwords', async (req, res) => {
   try {
     const passwords = await Password.find({});
-    res.json(passwords);  // Return all saved passwords
+    const decryptedPasswords = passwords.map(pwd => ({
+      website: pwd.website,
+      password: decryptPassword(pwd.encryptedPassword, pwd.iv) // Decrypt before sending
+    }));
+    res.json(decryptedPasswords);  // Return decrypted passwords
   } catch (err) {
-    console.log(err);
+    console.log('Error retrieving passwords:', err.message);
     res.status(500).json({ message: 'Error retrieving passwords' });
   }
 });

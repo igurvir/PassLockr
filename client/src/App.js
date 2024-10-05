@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
@@ -9,6 +9,7 @@ function App() {
   const [includeSymbols, setIncludeSymbols] = useState(true);
   const [website, setWebsite] = useState('');  // State for website input
   const [strength, setStrength] = useState('Weak');
+  const [savedPasswords, setSavedPasswords] = useState([]);  // State to store retrieved passwords
 
   const calculateStrength = (pwd) => {
     let strengthLevel = 0;
@@ -86,6 +87,18 @@ function App() {
     alert(result.message);  // Show success message
   };
 
+  // Fetch saved passwords from the backend
+  const fetchSavedPasswords = async () => {
+    const response = await fetch('/api/get-passwords');
+    const data = await response.json();
+    setSavedPasswords(data);  // Store the retrieved passwords
+  };
+
+  // Fetch saved passwords on component mount
+  useEffect(() => {
+    fetchSavedPasswords();
+  }, []);
+
   return (
     <div className="App">
       <header className="App-header">
@@ -146,6 +159,21 @@ function App() {
           <h2>Generated Password: {password}</h2>
           <h3>Password Strength: {strength}</h3>
         </div>
+
+        {/* Display saved passwords */}
+        <h2>Saved Passwords:</h2>
+        <ul>
+          {Array.isArray(savedPasswords) && savedPasswords.length > 0 ? (
+            savedPasswords.map((pwd, index) => (
+              <li key={index}>
+                <strong>Website:</strong> {pwd.website} <br />
+                <strong>Password:</strong> {pwd.password}
+              </li>
+            ))
+          ) : (
+            <li>No saved passwords found.</li>
+          )}
+        </ul>
       </header>
     </div>
   );
