@@ -7,6 +7,7 @@ function App() {
   const [includeUpper, setIncludeUpper] = useState(true);
   const [includeNumbers, setIncludeNumbers] = useState(true);
   const [includeSymbols, setIncludeSymbols] = useState(true);
+  const [website, setWebsite] = useState('');  // State for website input
   const [strength, setStrength] = useState('Weak');
 
   const calculateStrength = (pwd) => {
@@ -30,16 +31,59 @@ function App() {
     }
   };
 
+  const checkPasswordPattern = (pwd) => {
+    for (let i = 2; i < pwd.length; i++) {
+      const isUppercase = (char) => /[A-Z]/.test(char);
+      const isNumber = (char) => /[0-9]/.test(char);
+      const isSymbol = (char) => /[!@#$%^&*()_+[\]{}|;:,.<>?]/.test(char);
+
+      const char1 = pwd[i - 2];
+      const char2 = pwd[i - 1];
+      const char3 = pwd[i];
+
+      // If three consecutive characters are from the same set, return false
+      if (
+        (isUppercase(char1) && isUppercase(char2) && isUppercase(char3)) ||
+        (isNumber(char1) && isNumber(char2) && isNumber(char3)) ||
+        (isSymbol(char1) && isSymbol(char2) && isSymbol(char3))
+      ) {
+        return false;
+      }
+    }
+    return true;
+  };
+
   const generatePassword = async () => {
-    const response = await fetch('/api/generate-password', {
+    let validPassword = '';
+    let isValid = false;
+
+    while (!isValid) {
+      const response = await fetch('/api/generate-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ length, includeUpper, includeNumbers, includeSymbols }),
+      });
+      const data = await response.json();
+      validPassword = data.password;
+
+      // Validate password pattern
+      isValid = checkPasswordPattern(validPassword);
+    }
+
+    console.log('Password:', validPassword, 'Strength:', calculateStrength(validPassword));
+    setPassword(validPassword);
+    setStrength(calculateStrength(validPassword));
+  };
+
+  // Save password functionality to store password with website name
+  const savePassword = async () => {
+    const response = await fetch('/api/save-password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ length, includeUpper, includeNumbers, includeSymbols }),
+      body: JSON.stringify({ password, website }),  // Send password and website
     });
-    const data = await response.json();
-    console.log('Password:', data.password, 'Strength:', calculateStrength(data.password)); // Added this line for debugging
-    setPassword(data.password);
-    setStrength(calculateStrength(data.password));
+    const result = await response.json();
+    alert(result.message);  // Show success message
   };
 
   return (
@@ -84,7 +128,20 @@ function App() {
             Include Symbols
           </label>
         </div>
+
+        {/* Website Input */}
+        <div>
+          <label>Website/Service Name:</label>
+          <input
+            type="text"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            placeholder="Enter website or service name"
+          />
+        </div>
+
         <button onClick={generatePassword}>Generate Password</button>
+        <button onClick={savePassword}>Save Password</button>  {/* Save Button */}
         <div>
           <h2>Generated Password: {password}</h2>
           <h3>Password Strength: {strength}</h3>

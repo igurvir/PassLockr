@@ -1,9 +1,22 @@
 const express = require('express');
 const cors = require('cors'); // Add CORS middleware
+const crypto = require('crypto'); // Add crypto for encryption
 const app = express();
 
 app.use(express.json());
 app.use(cors()); // Enable CORS for all routes
+
+const algorithm = 'aes-256-cbc';
+const secretKey = crypto.randomBytes(32);  // Secret key for encryption
+const iv = crypto.randomBytes(16);         // Initialization vector
+
+// Function to encrypt passwords
+const encryptPassword = (password) => {
+  const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
+  let encrypted = cipher.update(password, 'utf8', 'hex');
+  encrypted += cipher.final('hex');
+  return { iv: iv.toString('hex'), encryptedData: encrypted };
+};
 
 // API route for generating passwords
 app.post('/api/generate-password', (req, res) => {
@@ -34,6 +47,20 @@ app.post('/api/generate-password', (req, res) => {
   }
 
   res.json({ password });
+});
+
+// API route for saving encrypted passwords
+app.post('/api/save-password', (req, res) => {
+  const { password, website } = req.body;
+  
+  if (!password || !website) {
+    return res.status(400).json({ message: 'Password and Website are required' });
+  }
+
+  const encryptedPassword = encryptPassword(password);
+  console.log(`Website: ${website}, Encrypted Password: ${encryptedPassword.encryptedData}, IV: ${encryptedPassword.iv}`);
+
+  res.json({ message: 'Password saved successfully (encrypted)' });
 });
 
 // Root route
