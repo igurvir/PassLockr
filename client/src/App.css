@@ -1,97 +1,114 @@
-body {
-  font-family: 'Roboto', sans-serif;
-  background-color: #f8f9fa; /* Light background */
-  color: #333;
+.App {
+  text-align: center;
+  background-color: #f0f4f8; /* Light background for better readability */
+  min-height: 100vh;
+  padding: 20px;
 }
 
 .App-header {
-  padding: 40px;
-  background-color: #007bff; /* Primary color */
+  background-color: #007bff;
+  padding: 20px;
+  border-radius: 10px;
   color: white;
-  text-align: center;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
 }
 
-h1 {
-  margin-bottom: 20px;
-  font-size: 3rem;
+h1, h2 {
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 15px;
 }
 
-input, select {
-  margin-top: 10px;
-  margin-bottom: 10px;
+input, button {
   padding: 10px;
-  width: 100%;
+  margin: 10px;
   border-radius: 5px;
-  border: 1px solid #ccc;
+  border: none;
+  font-size: 16px;
 }
 
-input[type="range"] {
-  width: 100%;
+input[type="password"], input[type="text"] {
+  width: 80%;
+  max-width: 500px;
 }
 
 button {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
+  background-color: #343a40;
+  color: white;
+  cursor: pointer;
   transition: background-color 0.3s ease;
-  margin: 10px 5px;
 }
 
 button:hover {
-  opacity: 0.9;
+  background-color: #495057;
 }
 
 ul {
   list-style-type: none;
-  padding-left: 0;
-  margin-top: 20px;
+  padding: 0;
 }
 
 li {
-  background-color: #e9ecef;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  border: 1px solid #007bff;
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 10px;
+  color: #333;
+  text-align: left;
+  font-size: 18px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
-h2, h3 {
+strong {
+  color: #007bff;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+input[type="range"] {
+  width: 80%;
+  max-width: 500px;
+  margin-bottom: 20px;
+}
+
+/* Added for the password strength section */
+h3 {
+  color: #ffc107;
+}
+
+/* Change master password section */
+#change-master-password {
+  background-color: #343a40;
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
   margin-top: 20px;
 }
 
-.form-group {
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
+#change-master-password h2 {
+  margin-bottom: 10px;
 }
 
-.form-check {
-  margin-bottom: 15px;
+#change-master-password input {
+  width: 70%;
 }
 
-.App {
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.btn-primary {
+#change-master-password button {
   background-color: #007bff;
-  border-color: #007bff;
+  color: white;
 }
 
-.btn-secondary {
-  background-color: #6c757d;
-  border-color: #6c757d;
-}
-
-.btn-success {
-  background-color: #28a745;
-  border-color: #28a745;
-}
-
-.btn {
-  display: inline-block;
+#change-master-password button:hover {
+  background-color: #0056b3;
 }
