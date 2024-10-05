@@ -7,6 +7,28 @@ function App() {
   const [includeUpper, setIncludeUpper] = useState(true);
   const [includeNumbers, setIncludeNumbers] = useState(true);
   const [includeSymbols, setIncludeSymbols] = useState(true);
+  const [strength, setStrength] = useState('Weak');
+
+  const calculateStrength = (pwd) => {
+    let strengthLevel = 0;
+    if (pwd.length >= 8) strengthLevel++;
+    if (/[A-Z]/.test(pwd)) strengthLevel++;  // Uppercase check
+    if (/[0-9]/.test(pwd)) strengthLevel++;  // Numbers check
+    if (/[!@#$%^&*()_+[\]{}|;:,.<>?]/.test(pwd)) strengthLevel++;  // Symbols check
+
+    switch (strengthLevel) {
+      case 1:
+        return 'Weak';
+      case 2:
+        return 'Moderate';
+      case 3:
+        return 'Strong';
+      case 4:
+        return 'Very Strong';
+      default:
+        return 'Weak';
+    }
+  };
 
   const generatePassword = async () => {
     const response = await fetch('/api/generate-password', {
@@ -15,7 +37,9 @@ function App() {
       body: JSON.stringify({ length, includeUpper, includeNumbers, includeSymbols }),
     });
     const data = await response.json();
+    console.log('Password:', data.password, 'Strength:', calculateStrength(data.password)); // Added this line for debugging
     setPassword(data.password);
+    setStrength(calculateStrength(data.password));
   };
 
   return (
@@ -63,6 +87,7 @@ function App() {
         <button onClick={generatePassword}>Generate Password</button>
         <div>
           <h2>Generated Password: {password}</h2>
+          <h3>Password Strength: {strength}</h3>
         </div>
       </header>
     </div>
