@@ -184,6 +184,27 @@ app.post('/api/get-passwords', async (req, res) => {
   }
 });
 
+// API route to delete a saved password by website
+app.delete('/api/delete-password', async (req, res) => {
+  const { website } = req.body;
+
+  if (!website) {
+    return res.status(400).json({ message: 'Website is required' });
+  }
+
+  try {
+    const result = await Password.deleteOne({ website });
+    if (result.deletedCount > 0) {
+      res.json({ message: 'Password deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Password not found' });
+    }
+  } catch (err) {
+    console.log('Error deleting password:', err.message);
+    res.status(500).json({ message: 'Error deleting password' });
+  }
+});
+
 // Root route
 app.get('/', (req, res) => {
   res.send('Welcome to PassLockr!');

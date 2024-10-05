@@ -133,6 +133,24 @@ function App() {
     }
   };
 
+  // Delete password by website
+  const deletePassword = async (websiteToDelete) => {
+    const response = await fetch('/api/delete-password', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ website: websiteToDelete }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert(result.message);
+      setSavedPasswords(savedPasswords.filter(pwd => pwd.website !== websiteToDelete));
+    } else {
+      alert(result.message);
+    }
+  };
+
   return (
     <div className="App">
       <header className="App-header">
@@ -216,6 +234,7 @@ function App() {
                   <li key={index}>
                     <strong>Website:</strong> {pwd.website} <br />
                     <strong>Password:</strong> {pwd.password}
+                    <button onClick={() => deletePassword(pwd.website)}>Delete</button>
                   </li>
                 ))
               ) : (
