@@ -10,10 +10,10 @@ function App() {
   const [website, setWebsite] = useState('');  
   const [strength, setStrength] = useState('Weak');
   const [savedPasswords, setSavedPasswords] = useState([]);
-  const [masterPassword, setMasterPassword] = useState(''); // State for master password
-  const [isVerified, setIsVerified] = useState(false); // To track if master password is verified
+  const [masterPassword, setMasterPassword] = useState(''); 
+  const [isVerified, setIsVerified] = useState(false); 
+  const [showPasswords, setShowPasswords] = useState(false); // State to show/hide saved passwords
 
-  // New states for changing master password
   const [currentMasterPassword, setCurrentMasterPassword] = useState('');
   const [newMasterPassword, setNewMasterPassword] = useState('');
   const [confirmMasterPassword, setConfirmMasterPassword] = useState('');
@@ -90,25 +90,24 @@ function App() {
     alert(result.message);
   };
 
-  // Fetch passwords after verifying the master password
   const fetchSavedPasswords = async () => {
     const response = await fetch('/api/get-passwords', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ masterPassword }), // Send the master password for verification
+      body: JSON.stringify({ masterPassword }), 
     });
 
     const data = await response.json();
 
     if (response.status === 200) {
       setSavedPasswords(data);
-      setIsVerified(true); // Mark master password as verified
+      setIsVerified(true); 
+      setShowPasswords(true); // Show the passwords after verification
     } else {
       alert('Invalid master password');
     }
   };
 
-  // Change master password logic
   const changeMasterPassword = async () => {
     if (newMasterPassword !== confirmMasterPassword) {
       return alert('New passwords do not match');
@@ -133,7 +132,6 @@ function App() {
     }
   };
 
-  // Delete password by website
   const deletePassword = async (websiteToDelete) => {
     const response = await fetch('/api/delete-password', {
       method: 'DELETE',
@@ -149,6 +147,10 @@ function App() {
     } else {
       alert(result.message);
     }
+  };
+
+  const closePasswords = () => {
+    setShowPasswords(false); // Hide the passwords
   };
 
   return (
@@ -212,7 +214,6 @@ function App() {
           <h3>Password Strength: {strength}</h3>
         </div>
 
-        {/* Prompt for master password */}
         <div>
           <h2>Enter Master Password to View Saved Passwords</h2>
           <input
@@ -224,8 +225,7 @@ function App() {
           <button onClick={fetchSavedPasswords}>Verify Master Password</button>
         </div>
 
-        {/* Display saved passwords if verified */}
-        {isVerified && (
+        {isVerified && showPasswords && (
           <div>
             <h2>Saved Passwords:</h2>
             <ul>
@@ -241,10 +241,10 @@ function App() {
                 <li>No saved passwords found.</li>
               )}
             </ul>
+            <button onClick={closePasswords}>Close Saved Passwords</button>
           </div>
         )}
 
-        {/* Change Master Password Section */}
         <div>
           <h2>Change Master Password</h2>
           <input
