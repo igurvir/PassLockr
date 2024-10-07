@@ -58,100 +58,99 @@ Instructions
 Clone the Repository:
 
 `git clone https://github.com/yourusername/passlockr.git`
-cd passlockr
+`cd passlockr`
+
 Install Dependencies:
 
-bash
-Copy code
-npm install
+`npm install`
 Set up Environment Variables: Create a .env file in the root directory and add the following values:
 
-makefile
-Copy code
-MONGODB_URI=<your_mongodb_connection_string>
-SECRET_KEY=<32_character_secret_key_for_aes>
+
+`MONGODB_URI=<your_mongodb_connection_string>
+SECRET_KEY=<32_character_secret_key_for_aes>`
+
 Run the Application: Start the development server:
 
-bash
-Copy code
 npm start
 By default, the application will run on http://localhost:5001. You can access the frontend by running it on port 3000.
 
 Run the Frontend: Open a new terminal window, navigate to the client folder, and start the React application:
 
-bash
-Copy code
-cd client
-npm start
+
+`cd client
+npm start`
+
 API Endpoints
 Set Master Password
-Endpoint: POST /api/set-master-password
+Endpoint: `POST /api/set-master-password`
 Description: Set the master password for the first time.
 Body:
 json
-Copy code
+`
 {
   "masterPassword": "your_master_password"
 }
+`
 Verify Master Password
-Endpoint: POST /api/verify-master-password
+Endpoint: `POST /api/verify-master-password`
 Description: Verify the master password before accessing passwords.
 Body:
 json
-Copy code
+`
 {
   "masterPassword": "your_master_password"
 }
+`
 Change Master Password
-Endpoint: POST /api/change-master-password
+Endpoint: `POST /api/change-master-password`
 Description: Change the master password.
 Body:
-json
-Copy code
+`
 {
   "currentMasterPassword": "current_password",
   "newMasterPassword": "new_password"
 }
+`
 Generate Password
-Endpoint: POST /api/generate-password
+Endpoint: `POST /api/generate-password`
 Description: Generate a new password with custom options.
 Body:
-json
-Copy code
+`
 {
   "length": 12,
   "includeUpper": true,
   "includeNumbers": true,
   "includeSymbols": true
 }
+`
 Save Password
-Endpoint: POST /api/save-password
+Endpoint: `POST /api/save-password`
 Description: Save a generated password for a website or service.
 Body:
-json
-Copy code
+`
 {
   "password": "generated_password",
   "website": "example.com"
 }
+`
 Get Saved Passwords
-Endpoint: POST /api/get-passwords
+Endpoint: `POST /api/get-passwords`
 Description: Retrieve saved, encrypted passwords after verifying the master password.
 Body:
-json
-Copy code
+`
 {
   "masterPassword": "your_master_password"
 }
+`
 Delete Saved Password
-Endpoint: DELETE /api/delete-password
+Endpoint: `DELETE /api/delete-password`
 Description: Delete a saved password for a specific website.
 Body:
-json
-Copy code
+`
 {
   "website": "example.com"
 }
+`
 Future Improvements
 Add multi-factor authentication (MFA) for enhanced security.
 Implement password history to prevent reuse of old passwords.
