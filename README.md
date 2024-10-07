@@ -80,8 +80,10 @@ Run the Frontend: Open a new terminal window, navigate to the client folder, and
 `cd client
 npm start`
 
-API Endpoints
+### API Endpoints
+Remember to Set the master password through API platform like postman, then use the web app for everything else
 Set Master Password
+
 Endpoint: `POST /api/set-master-password`
 Description: Set the master password for the first time.
 Body:
@@ -92,6 +94,7 @@ json
 }
 `
 Verify Master Password
+
 Endpoint: `POST /api/verify-master-password`
 Description: Verify the master password before accessing passwords.
 Body:
@@ -102,6 +105,7 @@ json
 }
 `
 Change Master Password
+
 Endpoint: `POST /api/change-master-password`
 Description: Change the master password.
 Body:
@@ -112,6 +116,7 @@ Body:
 }
 `
 Generate Password
+
 Endpoint: `POST /api/generate-password`
 Description: Generate a new password with custom options.
 Body:
@@ -124,6 +129,7 @@ Body:
 }
 `
 Save Password
+
 Endpoint: `POST /api/save-password`
 Description: Save a generated password for a website or service.
 Body:
@@ -134,6 +140,7 @@ Body:
 }
 `
 Get Saved Passwords
+
 Endpoint: `POST /api/get-passwords`
 Description: Retrieve saved, encrypted passwords after verifying the master password.
 Body:
@@ -143,6 +150,7 @@ Body:
 }
 `
 Delete Saved Password
+
 Endpoint: `DELETE /api/delete-password`
 Description: Delete a saved password for a specific website.
 Body:
