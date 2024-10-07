@@ -1,64 +1,63 @@
 # PassLockr - Password Manager & Generator
-Overview
+### Overview
 PassLockr is a secure web application that generates strong, customizable passwords and manages user passwords securely using encryption. This project showcases a secure password management system with AES-256 encryption, bcrypt hashing for master password protection, and a streamlined web interface built with React and Node.js. It also provides the ability to change master passwords and delete saved passwords securely. PassLockr stores all data in MongoDB, offering users peace of mind by ensuring sensitive data is encrypted and secure.
 
-Features
-Password Generation:
-
+### Features
+*Password Generation:*
 Generate strong, random passwords with customizable options.
 Passwords can be customized to include uppercase letters, numbers, and symbols.
 The length of the password is adjustable from 8 to 32 characters.
-Password Strength Calculation:
 
+*Password Strength Calculation:*
 Real-time evaluation of password strength based on length and character types.
 Displays password strength (Weak, Moderate, Strong, or Very Strong) to help users choose secure passwords.
-Master Password Protection:
 
+*Master Password Protection:*
 Users must set a master password to access saved passwords.
 The master password is hashed with bcrypt to provide additional security.
 Users can change the master password at any time.
-Password Storage and Encryption:
 
+*Password Storage and Encryption:*
 Passwords are stored securely in MongoDB, encrypted with AES-256 encryption.
 Each password entry includes an IV (Initialization Vector) for unique encryption.
 Passwords are decrypted only after the user enters the correct master password.
-Password Management:
 
+*Password Management:*
 Users can view, manage, and delete saved passwords.
 Passwords are associated with a website/service name for easy identification.
 Password deletion is allowed after master password verification.
-Secure Data Handling:
 
+*Secure Data Handling:*
 AES-256 encryption ensures the security of stored passwords.
 Bcrypt ensures secure storage of the master password.
 MongoDB is used to store the encrypted data securely.
-Tech Stack
-Frontend:
 
+### Tech Stack
+*Frontend:*
 React
 Bootstrap (for improved UI styling)
-Backend:
 
+*Backend:*
 Node.js
 Express.js
-Database:
 
+*Database:*
 MongoDB
-Security:
 
+*Security:*
 AES-256 encryption for password storage.
 Bcrypt hashing for master password protection.
-Installation & Setup
+
+### Installation & Setup
 Prerequisites
 Node.js (v14.x or above)
 MongoDB (local or cloud instance)
 npm (Node Package Manager)
+
 Instructions
 Clone the Repository:
 
-bash
-Copy code
-git clone https://github.com/yourusername/passlockr.git
+`git clone https://github.com/yourusername/passlockr.git`
 cd passlockr
 Install Dependencies:
 
